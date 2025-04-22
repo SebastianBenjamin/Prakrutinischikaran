@@ -2,7 +2,7 @@ import requests
 import json
 
 # Replace with your actual API URL
-url = "http://127.0.0.1:5000"
+url = "https://prakruthinischikaran-api.onrender.com"
 
 # Example data with all features
 # Replace these with actual values from your dataset
