@@ -1,0 +1,165 @@
+Skin color_1.0
+Skin color_2.0
+Skin color_3.0
+Skin texture_1.0
+Skin texture_2.0
+Skin texture_3.0
+Details about hair type_1.0
+Details about hair type_2.0
+Details about hair type_3.0
+Texture of hair _1.0
+Texture of hair _2.0
+Texture of hair _3.0
+My hairs are_1.0
+My hairs are_2.0
+My hairs are_3.0
+Hair falling tendency	_1.0
+Hair falling tendency	_2.0
+Hair falling tendency	_3.0
+Eyes	_1.0
+Eyes	_2.0
+Eyes	_3.0
+My eyes  eye balls are_1.0
+My eyes  eye balls are_2.0
+My eyes  eye balls are_3.0
+Physique	_1.0
+Physique	_2.0
+Physique	_3.0
+Veins	_1.0
+Veins	_2.0
+Veins	_3.0
+Usual body temperature 	_1.0
+Usual body temperature 	_2.0
+Usual body temperature 	_3.0
+Teeth 	_1.0
+Teeth 	_2.0
+Teeth 	_3.0
+Is your lips	_1.0
+Is your lips	_2.0
+Is your lips	_3.0
+Hands(Length)_1.0
+Hands(Length)_2.0
+Hands(Length)_3.0
+Body hair	_1.0
+Body hair	_2.0
+Body hair	_3.0
+Joints	_1.0
+Joints	_2.0
+Joints	_3.0
+Chest	_1.0
+Chest	_2.0
+Chest	_3.0
+Tongue	_1.0
+Tongue	_2.0
+Tongue	_3.0
+Body frame (Length)	_1.0
+Body frame (Length)	_2.0
+Body frame (Length)	_3.0
+Body frame (Breadth)	_1.0
+Body frame (Breadth)	_2.0
+Body frame (Breadth)	_3.0
+Bodyweight changes	_1.0
+Bodyweight changes	_2.0
+Bodyweight changes	_3.0
+Style of speaking	_1.0
+Style of speaking	_2.0
+Style of speaking	_3.0
+Voice 	_1.0
+Voice 	_2.0
+Voice 	_3.0
+Walk 	_1.0
+Walk 	_2.0
+Walk 	_3.0
+Appetite 	 _1.0
+Appetite 	 _2.0
+Appetite 	 _3.0
+Intensity of hunger	_1.0
+Intensity of hunger	_2.0
+Intensity of hunger	_3.0
+Favorite climate	_1.0
+Favorite climate	_2.0
+Favorite climate	_3.0
+Stamina	_1.0
+Stamina	_2.0
+Stamina	_3.0
+Tastes, I like most_1.0
+Tastes, I like most_2.0
+Tastes, I like most_3.0
+Eagerness about drinking water_1.0
+Eagerness about drinking water_2.0
+Eagerness about drinking water_3.0
+Frequency of liquid intake	_1.0
+Frequency of liquid intake	_2.0
+Frequency of liquid intake	_3.0
+Sleep	_1.0
+Sleep	_2.0
+Sleep	_3.0
+Quantity of sweat	_1.0
+Quantity of sweat	_2.0
+Quantity of sweat	_3.0
+Emotion	_1.0
+Emotion	_2.0
+Emotion	_3.0
+Intellect	_1.0
+Intellect	_2.0
+Intellect	_3.0
+Grasping	_1.0
+Grasping	_2.0
+Grasping	_3.0
+Concentration	_1.0
+Concentration	_2.0
+Concentration	_3.0
+Memory	_1.0
+Memory	_2.0
+Memory	_3.0
+Temperament	_1.0
+Temperament	_2.0
+Temperament	_3.0
+Patience	_1.0
+Patience	_2.0
+Patience	_3.0
+Satisfaction/content	_1.0
+Satisfaction/content	_2.0
+Satisfaction/content	_3.0
+While making decisions	_1.0
+While making decisions	_2.0
+While making decisions	_3.0
+Activities	_1.0
+Activities	_2.0
+Activities	_3.0
+Nature of dreams	_1.0
+Nature of dreams	_2.0
+Nature of dreams	_3.0
+Friendships & relations	_1.0
+Friendships & relations	_2.0
+Friendships & relations	_3.0
+Faith in God	_1.0
+Faith in God	_2.0
+Faith in God	_3.0
+Self-control	_1.0
+Self-control	_2.0
+Self-control	_3.0
+Gratefulness	_1.0
+Gratefulness	_2.0
+Gratefulness	_3.0
+Likings	_1.0
+Likings	_2.0
+Likings	_3.0
+Liking- type of food_1.0
+Liking- type of food_2.0
+Liking- type of food_3.0
+Politeness/humbleness_1.0
+Politeness/humbleness_2.0
+Politeness/humbleness_3.0
+Biting nails _1.0
+Biting nails _2.0
+Biting nails _3.0
+Fond of praise _1.0
+Fond of praise _2.0
+Fond of praise _3.0
+Brave_1.0
+Brave_2.0
+Brave_3.0
+Egoistic_1.0
+Egoistic_2.0
+Egoistic_3.0
