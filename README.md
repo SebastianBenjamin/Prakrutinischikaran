@@ -5,8 +5,8 @@
 An XGBoost-based Machine Learning API to determine Prakriti (body constitution) based on 40+ bio-behavioral traits from Ayurveda.
 
 > 🔮 **Accuracy**: 88.5%  
-> 🚀 **Live API**: [Render](https://prakruthinischikaran-api.onrender.com)  
-> 🧪 **Try API Interface**: [Netlify Test Client](https://api-prakritinischikaran.netlify.app/)
+> 🚀 **Live API**: [API Link](https://prakruthinischikaran-api.onrender.com)  
+> 🧪 **Try API Interface**: [Test Webapp](https://api-prakritinischikaran.netlify.app/)
 
 ---
 
