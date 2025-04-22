@@ -172,14 +172,10 @@ print("Response:", response.json())
 ### 🔄 Confusion Matrix
 ![image](https://github.com/user-attachments/assets/e3b82bae-f6b2-4e44-96e6-1c7f8d3f5fb1)
 
-`🔲 Visualization of confusion matrix - heatmap preferred`
-
----
-
+`🔲 Visualization of confusion matrix - heatmap `
 
 ---
 
 ## 🙏 Acknowledgement
 
 Built using inspiration from **Ayurveda Prakriti** concept – integrating technology and tradition for personalized well-being.
-
