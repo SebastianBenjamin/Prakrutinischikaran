@@ -5,8 +5,8 @@ import time
 def test_local_api():
     """Test the locally running API"""
     # URL for local testing - Flask default port is 5000
-    base_url = "http://127.0.0.1:5000"
-    # base_url = "https://prakruthinischikaran-api.onrender.com"
+    # base_url = "http://127.0.0.1:5000"
+    base_url = "https://prakruthinischikaran-api.onrender.com"
     
     # Test the home endpoint
     print("\n===== Testing Home Endpoint =====")

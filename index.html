@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prakruthi Nishikaran API Tester</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #3498db;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+        }
+        .test-title {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 4px;
+            border-left: 4px solid #3498db;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        .success {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .error {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .loading {
+            display: inline-block;
+            margin-left: 10px;
+            color: #7f8c8d;
+        }
+        .hidden {
+            display: none;
+        }
+        .response-time {
+            color: #7f8c8d;
+            font-style: italic;
+            margin-top: 5px;
+        }
+        .payload-viewer {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Prakruthi Nishikaran API Tester</h1>
+        
+        <div class="test-section">
+            <div class="test-title">1. Test Home Endpoint</div>
+            <p>Test the root endpoint of the API to check if it's running.</p>
+            <button id="testHomeBtn">Test Home Endpoint</button>
+            <span id="homeLoading" class="loading hidden">Testing...</span>
+            <div id="homeResult" class="result hidden"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">2. Test Prediction Endpoint</div>
+            <p>Test the prediction endpoint with all required features.</p>
+            <div class="payload-viewer" id="fullPayloadViewer"></div>
+            <button id="testPredictBtn">Test Prediction Endpoint</button>
+            <span id="predictLoading" class="loading hidden">Testing...</span>
+            <div id="predictResult" class="result hidden"></div>
+            <div id="predictTime" class="response-time hidden"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">3. Test Error Handling (Missing Features)</div>
+            <p>Test the prediction endpoint with missing features to check error handling.</p>
+            <div class="payload-viewer" id="incompletePayloadViewer"></div>
+            <button id="testErrorBtn">Test Missing Features</button>
+            <span id="errorLoading" class="loading hidden">Testing...</span>
+            <div id="errorResult" class="result hidden"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">4. Test String Conversion</div>
+            <p>Test if the API can handle string values that represent numbers.</p>
+            <div class="payload-viewer" id="stringPayloadViewer"></div>
+            <button id="testStringBtn">Test String Conversion</button>
+            <span id="stringLoading" class="loading hidden">Testing...</span>
+            <div id="stringResult" class="result hidden"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">5. Run All Tests</div>
+            <p>Run all the above tests sequentially.</p>
+            <button id="runAllBtn">Run All Tests</button>
+            <span id="allLoading" class="loading hidden">Running all tests...</span>
+            <div id="allResults" class="result hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        // Base URL for the API
+        const baseUrl = "https://prakruthinischikaran-api.onrender.com";
+        
+        // Sample payloads
+        const fullPayload = {
+            'Skin color': 1,
+            'Skin texture': 1,
+            'Details about hair type': 1,
+            'Texture of hair ': 1,
+            'My hairs are': 1,
+            'Hair falling tendency\t': 1,
+            'Eyes\t': 1,
+            'My eyes  eye balls are': 1,
+            'Physique\t': 1,
+            'Veins\t': 1,
+            'Usual body temperature \t': 1,
+            'Teeth \t': 1,
+            'Is your lips\t': 2,
+            'Hands(Length)': 2,
+            'Body hair\t': 2,
+            'Joints\t': 2,
+            'Chest\t': 2,
+            'Tongue\t': 2,
+            'Body frame (Length)\t': 2,
+            'Body frame (Breadth)\t': 2,
+            'Bodyweight changes\t': 2,
+            'Style of speaking\t': 2,
+            'Voice \t': 2,
+            'Walk \t': 2,
+            'Appetite \t ': 2,
+            'Intensity of hunger\t': 2,
+            'Favorite climate\t': 2,
+            'Stamina\t': 2,
+            'Tastes, I like most': 2,
+            'Eagerness about drinking water': 2,
+            'Frequency of liquid intake\t': 2,
+            'Sleep\t': 2,
+            'Quantity of sweat\t': 2,
+            'Emotion\t': 2,
+            'Intellect\t': 2,
+            'Grasping\t': 2,
+            'Concentration\t': 2,
+            'Memory\t': 2,
+            'Temperament\t': 2,
+            'Patience\t': 2,
+            'Satisfaction/content\t': 2,
+            'While making decisions\t': 2,
+            'Activities\t': 2,
+            'Nature of dreams\t': 2,
+            'Friendships & relations\t': 2,
+            'Faith in God\t': 2,
+            'Self-control\t': 2,
+            'Gratefulness\t': 2,
+            'Likings\t': 2,
+            'Liking- type of food': 2,
+            'Politeness/humbleness': 2,
+            'Biting nails ': 1,
+            'Fond of praise ': 1,
+            'Brave': 1,
+            'Egoistic': 1
+        };
+        
+        const incompletePayload = {
+            'Skin color': 1,
+            'Skin texture': 1
+        };
+        
+        const stringPayload = {};
+        for (const key in fullPayload) {
+            stringPayload[key] = fullPayload[key].toString();
+        }
+        
+        // Display payloads in viewers
+        document.getElementById('fullPayloadViewer').textContent = JSON.stringify(fullPayload, null, 2);
+        document.getElementById('incompletePayloadViewer').textContent = JSON.stringify(incompletePayload, null, 2);
+        document.getElementById('stringPayloadViewer').textContent = JSON.stringify(stringPayload, null, 2);
+        
+        // Test Home Endpoint
+        document.getElementById('testHomeBtn').addEventListener('click', async function() {
+            const resultDiv = document.getElementById('homeResult');
+            const loadingSpan = document.getElementById('homeLoading');
+            
+            resultDiv.classList.add('hidden');
+            loadingSpan.classList.remove('hidden');
+            
+            try {
+                const startTime = performance.now();
+                const response = await fetch(`${baseUrl}/`);
+                const endTime = performance.now();
+                
+                let resultText = `Status Code: ${response.status}\n`;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultText += `Response: ${JSON.stringify(data, null, 2)}\n\n`;
+                    resultText += `<span class="success">✅ Home endpoint test passed</span>`;
+                } else {
+                    resultText += `Response: ${await response.text()}\n\n`;
+                    resultText += `<span class="error">❌ Home endpoint test failed</span>`;
+                }
+                
+                resultDiv.innerHTML = resultText;
+                resultDiv.classList.remove('hidden');
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}\n\n<span class="error">❌ Home endpoint test failed with error</span>`;
+                resultDiv.classList.remove('hidden');
+            } finally {
+                loadingSpan.classList.add('hidden');
+            }
+        });
+        
+        // Test Prediction Endpoint
+        document.getElementById('testPredictBtn').addEventListener('click', async function() {
+            const resultDiv = document.getElementById('predictResult');
+            const timeDiv = document.getElementById('predictTime');
+            const loadingSpan = document.getElementById('predictLoading');
+            
+            resultDiv.classList.add('hidden');
+            timeDiv.classList.add('hidden');
+            loadingSpan.classList.remove('hidden');
+            
+            try {
+                const startTime = performance.now();
+                const response = await fetch(`${baseUrl}/predict`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(fullPayload)
+                });
+                const endTime = performance.now();
+                const responseTime = (endTime - startTime).toFixed(2);
+                
+                timeDiv.textContent = `Response time: ${responseTime} ms`;
+                timeDiv.classList.remove('hidden');
+                
+                let resultText = `Status Code: ${response.status}\n`;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultText += `Response:\n`;
+                    resultText += `Prediction: ${data.prediction || 'Not found'}\n`;
+                    resultText += `Probabilities:\n`;
+                    for (const [dosha, prob] of Object.entries(data.probabilities || {})) {
+                        resultText += `  ${dosha}: ${prob.toFixed(4)}\n`;
+                    }
+                    resultText += `\n<span class="success">✅ Prediction endpoint test passed</span>`;
+                } else {
+                    resultText += `Response: ${await response.text()}\n\n`;
+                    resultText += `<span class="error">❌ Prediction endpoint test failed</span>`;
+                }
+                
+                resultDiv.innerHTML = resultText;
+                resultDiv.classList.remove('hidden');
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}\n\n<span class="error">❌ Prediction endpoint test failed with error</span>`;
+                resultDiv.classList.remove('hidden');
+            } finally {
+                loadingSpan.classList.add('hidden');
+            }
+        });
+        
+        // Test Error Handling
+        document.getElementById('testErrorBtn').addEventListener('click', async function() {
+            const resultDiv = document.getElementById('errorResult');
+            const loadingSpan = document.getElementById('errorLoading');
+            
+            resultDiv.classList.add('hidden');
+            loadingSpan.classList.remove('hidden');
+            
+            try {
+                const response = await fetch(`${baseUrl}/predict`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(incompletePayload)
+                });
+                
+                let resultText = `Status Code: ${response.status}\n`;
+                
+                if (response.status === 400) {
+                    const data = await response.json();
+                    resultText += `Response: ${JSON.stringify(data, null, 2)}\n\n`;
+                    resultText += `<span class="success">✅ Error handling test passed (correctly detected missing features)</span>`;
+                } else {
+                    resultText += `Response: ${await response.text()}\n\n`;
+                    resultText += `<span class="error">❌ Error handling test failed (should return 400 for missing features)</span>`;
+                }
+                
+                resultDiv.innerHTML = resultText;
+                resultDiv.classList.remove('hidden');
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}\n\n<span class="error">❌ Error handling test failed with error</span>`;
+                resultDiv.classList.remove('hidden');
+            } finally {
+                loadingSpan.classList.add('hidden');
+            }
+        });
+        
+        // Test String Conversion
+        document.getElementById('testStringBtn').addEventListener('click', async function() {
+            const resultDiv = document.getElementById('stringResult');
+            const loadingSpan = document.getElementById('stringLoading');
+            
+            resultDiv.classList.add('hidden');
+            loadingSpan.classList.remove('hidden');
+            
+            try {
+                const response = await fetch(`${baseUrl}/predict`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(stringPayload)
+                });
+                
+                let resultText = `Status Code: ${response.status}\n`;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultText += `Response: ${JSON.stringify(data, null, 2)}\n\n`;
+                    resultText += `<span class="success">✅ String conversion test passed (API successfully converted strings to integers)</span>`;
+                } else {
+                    resultText += `Response: ${await response.text()}\n\n`;
+                    resultText += `<span class="error">❌ String conversion test failed</span>`;
+                }
+                
+                resultDiv.innerHTML = resultText;
+                resultDiv.classList.remove('hidden');
+            } catch (error) {
+                resultDiv.innerHTML = `Error: ${error.message}\n\n<span class="error">❌ String conversion test failed with error</span>`;
+                resultDiv.classList.remove('hidden');
+            } finally {
+                loadingSpan.classList.add('hidden');
+            }
+        });
+        
+        // Run All Tests
+        document.getElementById('runAllBtn').addEventListener('click', async function() {
+            const resultDiv = document.getElementById('allResults');
+            const loadingSpan = document.getElementById('allLoading');
+            
+            resultDiv.classList.add('hidden');
+            loadingSpan.classList.remove('hidden');
+            
+            let allResultsText = "===== Running All Tests =====\n\n";
+            
+            // Function to update results
+            function updateResults(text) {
+                allResultsText += text + "\n\n";
+                resultDiv.textContent = allResultsText;
+                resultDiv.classList.remove('hidden');
+            }
+            
+            try {
+                // Test Home Endpoint
+                updateResults("===== Testing Home Endpoint =====");
+                try {
+                    const startTime = performance.now();
+                    const response = await fetch(`${baseUrl}/`);
+                    const endTime = performance.now();
+                    
+                    let resultText = `Status Code: ${response.status}\n`;
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        resultText += `Response: ${JSON.stringify(data, null, 2)}\n`;
+                        resultText += `✅ Home endpoint test passed`;
+                    } else {
+                        resultText += `Response: ${await response.text()}\n`;
+                        resultText += `❌ Home endpoint test failed`;
+                    }
+                    
+                    updateResults(resultText);
+                } catch (error) {
+                    updateResults(`Error: ${error.message}\n❌ Home endpoint test failed with error`);
+                }
+                
+                // Test Prediction Endpoint
+                updateResults("===== Testing Prediction Endpoint =====");
+                try {
+                    const startTime = performance.now();
+                    const response = await fetch(`${baseUrl}/predict`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(fullPayload)
+                    });
+                    const endTime = performance.now();
+                    const responseTime = (endTime - startTime).toFixed(2);
+                    
+                    let resultText = `Status Code: ${response.status}\n`;
+                    resultText += `Response Time: ${responseTime} ms\n`;
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        resultText += `Prediction: ${data.prediction || 'Not found'}\n`;
+                        resultText += `Probabilities:\n`;
+                        for (const [dosha, prob] of Object.entries(data.probabilities || {})) {
+                            resultText += `  ${dosha}: ${prob.toFixed(4)}\n`;
+                        }
+                        resultText += `✅ Prediction endpoint test passed`;
+                    } else {
+                        resultText += `Response: ${await response.text()}\n`;
+                        resultText += `❌ Prediction endpoint test failed`;
+                    }
+                    
+                    updateResults(resultText);
+                } catch (error) {
+                    updateResults(`Error: ${error.message}\n❌ Prediction endpoint test failed with error`);
+                }
+                
+                // Test Error Handling
+                updateResults("===== Testing Error Handling (Missing Features) =====");
+                try {
+                    const response = await fetch(`${baseUrl}/predict`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(incompletePayload)
+                    });
+                    
+                    let resultText = `Status Code: ${response.status}\n`;
+                    
+                    if (response.status === 400) {
+                        const data = await response.json();
+                        resultText += `Response: ${JSON.stringify(data, null, 2)}\n`;
+                        resultText += `✅ Error handling test passed (correctly detected missing features)`;
+                    } else {
+                        resultText += `Response: ${await response.text()}\n`;
+                        resultText += `❌ Error handling test failed (should return 400 for missing features)`;
+                    }
+                    
+                    updateResults(resultText);
+                } catch (error) {
+                    updateResults(`Error: ${error.message}\n❌ Error handling test failed with error`);
+                }
+                
+                // Test String Conversion
+                updateResults("===== Testing Error Handling (Non-numeric Values) =====");
+                try {
+                    const response = await fetch(`${baseUrl}/predict`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(stringPayload)
+                    });
+                    
+                    let resultText = `Status Code: ${response.status}\n`;
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        resultText += `Response: ${JSON.stringify(data, null, 2)}\n`;
+                        resultText += `✅ String conversion test passed (API successfully converted strings to integers)`;
+                    } else {
+                        resultText += `Response: ${await response.text()}\n`;
+                        resultText += `❌ String conversion test failed`;
+                    }
+                    
+                    updateResults(resultText);
+                } catch (error) {
+                    updateResults(`Error: ${error.message}\n❌ String conversion test failed with error`);
+                }
+                
+                updateResults("===== All API Tests Completed =====");
+            } finally {
+                loadingSpan.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
