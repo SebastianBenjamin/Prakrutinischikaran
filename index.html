@@ -3,531 +3,1014 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prakruthi Nishikaran API Tester</title>
+    <title>Ayurvedic Prakruti Nischikaran</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <link href="https://img.icons8.com/fluency/96/null/lotus.png" rel="icon">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f0e4;
             color: #333;
         }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        .title-font {
+            font-family: 'Playfair Display', serif;
         }
-        h1 {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
+        .dosha-vata {
+            color: #6f42c1;
+            background-color: #f3f0ff;
         }
-        h2 {
-            color: #3498db;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-            margin-top: 30px;
+        .dosha-pitta {
+            color: #d63384;
+            background-color: #fff0f7;
         }
-        .test-section {
-            margin-bottom: 30px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 6px;
+        .dosha-kapha {
+            color: #fd7e14;
+            background-color: #fff4e6;
         }
-        .test-title {
-            font-weight: bold;
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            color: #2c3e50;
+        .question-card {
+            background-color: #fff9f0;
+            border: 1px solid #e2d5b9;
+            transition: all 0.3s ease;
         }
-        button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-right: 10px;
-            margin-bottom: 10px;
-            transition: background-color 0.3s;
+        .question-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
-        button:hover {
-            background-color: #2980b9;
+        .ayurveda-bg {
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-blend-mode: overlay;
+            background-color: rgba(245, 240, 228, 0.9);
         }
-        button:disabled {
-            background-color: #95a5a6;
-            cursor: not-allowed;
-        }
-        .result {
-            margin-top: 15px;
-            padding: 15px;
-            background-color: white;
-            border-radius: 4px;
-            border-left: 4px solid #3498db;
-            font-family: monospace;
-            white-space: pre-wrap;
-            overflow-x: auto;
-        }
-        .success {
-            color: #27ae60;
-            font-weight: bold;
-        }
-        .error {
-            color: #e74c3c;
-            font-weight: bold;
-        }
-        .loading {
-            display: inline-block;
-            margin-left: 10px;
-            color: #7f8c8d;
-        }
-        .hidden {
-            display: none;
-        }
-        .response-time {
-            color: #7f8c8d;
-            font-style: italic;
-            margin-top: 5px;
-        }
-        .payload-viewer {
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 10px;
-            background-color: #f0f0f0;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            font-family: monospace;
+        .auth-container {
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>Prakruthi Nishikaran API Tester</h1>
+<body class="min-h-screen">
+    <!-- Firebase Config -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgPbK7eGIWpq9Fe9IuP8lu6AslkXjSw-g",
+            authDomain: "prakriti-ml.firebaseapp.com",
+            databaseURL: "https://prakriti-ml-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "prakriti-ml",
+            storageBucket: "prakriti-ml.firebasestorage.app",
+            messagingSenderId: "228591322840",
+            appId: "1:228591322840:web:5ca85186487477c2cd39ad",
+            measurementId: "G-400WKJ325J"
+        };
         
-        <div class="test-section">
-            <div class="test-title">1. Test Home Endpoint</div>
-            <p>Test the root endpoint of the API to check if it's running.</p>
-            <button id="testHomeBtn">Test Home Endpoint</button>
-            <span id="homeLoading" class="loading hidden">Testing...</span>
-            <div id="homeResult" class="result hidden"></div>
-        </div>
-        
-        <div class="test-section">
-            <div class="test-title">2. Test Prediction Endpoint</div>
-            <p>Test the prediction endpoint with all required features.</p>
-            <div class="payload-viewer" id="fullPayloadViewer"></div>
-            <button id="testPredictBtn">Test Prediction Endpoint</button>
-            <span id="predictLoading" class="loading hidden">Testing...</span>
-            <div id="predictResult" class="result hidden"></div>
-            <div id="predictTime" class="response-time hidden"></div>
-        </div>
-        
-        <div class="test-section">
-            <div class="test-title">3. Test Error Handling (Missing Features)</div>
-            <p>Test the prediction endpoint with missing features to check error handling.</p>
-            <div class="payload-viewer" id="incompletePayloadViewer"></div>
-            <button id="testErrorBtn">Test Missing Features</button>
-            <span id="errorLoading" class="loading hidden">Testing...</span>
-            <div id="errorResult" class="result hidden"></div>
-        </div>
-        
-        <div class="test-section">
-            <div class="test-title">4. Test String Conversion</div>
-            <p>Test if the API can handle string values that represent numbers.</p>
-            <div class="payload-viewer" id="stringPayloadViewer"></div>
-            <button id="testStringBtn">Test String Conversion</button>
-            <span id="stringLoading" class="loading hidden">Testing...</span>
-            <div id="stringResult" class="result hidden"></div>
-        </div>
-        
-        <div class="test-section">
-            <div class="test-title">5. Run All Tests</div>
-            <p>Run all the above tests sequentially.</p>
-            <button id="runAllBtn">Run All Tests</button>
-            <span id="allLoading" class="loading hidden">Running all tests...</span>
-            <div id="allResults" class="result hidden"></div>
-        </div>
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+    </script>
+
+    <!-- App Container - will be populated based on auth state -->
+    <div id="app-container" class="min-h-screen">
+        <!-- Content will be dynamically loaded here -->
     </div>
 
     <script>
-        // Base URL for the API
-        const baseUrl = "https://prakruthinischikaran-api.onrender.com";
         
-        // Sample payloads
-        const fullPayload = {
-            'Skin color': 1,
-            'Skin texture': 1,
-            'Details about hair type': 1,
-            'Texture of hair ': 1,
-            'My hairs are': 1,
-            'Hair falling tendency\t': 1,
-            'Eyes\t': 1,
-            'My eyes  eye balls are': 1,
-            'Physique\t': 1,
-            'Veins\t': 1,
-            'Usual body temperature \t': 1,
-            'Teeth \t': 1,
-            'Is your lips\t': 2,
-            'Hands(Length)': 2,
-            'Body hair\t': 2,
-            'Joints\t': 2,
-            'Chest\t': 2,
-            'Tongue\t': 2,
-            'Body frame (Length)\t': 2,
-            'Body frame (Breadth)\t': 2,
-            'Bodyweight changes\t': 2,
-            'Style of speaking\t': 2,
-            'Voice \t': 2,
-            'Walk \t': 2,
-            'Appetite \t ': 2,
-            'Intensity of hunger\t': 2,
-            'Favorite climate\t': 2,
-            'Stamina\t': 2,
-            'Tastes, I like most': 2,
-            'Eagerness about drinking water': 2,
-            'Frequency of liquid intake\t': 2,
-            'Sleep\t': 2,
-            'Quantity of sweat\t': 2,
-            'Emotion\t': 2,
-            'Intellect\t': 2,
-            'Grasping\t': 2,
-            'Concentration\t': 2,
-            'Memory\t': 2,
-            'Temperament\t': 2,
-            'Patience\t': 2,
-            'Satisfaction/content\t': 2,
-            'While making decisions\t': 2,
-            'Activities\t': 2,
-            'Nature of dreams\t': 2,
-            'Friendships & relations\t': 2,
-            'Faith in God\t': 2,
-            'Self-control\t': 2,
-            'Gratefulness\t': 2,
-            'Likings\t': 2,
-            'Liking- type of food': 2,
-            'Politeness/humbleness': 2,
-            'Biting nails ': 1,
-            'Fond of praise ': 1,
-            'Brave': 1,
-            'Egoistic': 1
-        };
+        const prakruthiQuestions = {
+        "Skin color": {
+            "Vata": "Dark, dusky or ashen complexion",
+            "Pitta": "Reddish or fair complexion",
+            "Kapha": "Pale or glowing complexion"
+        },
+        "Skin texture": {
+            "Vata": "Dry, rough",
+            "Pitta": "Soft, warm, oily",
+            "Kapha": "Smooth, moist, thick"
+        },
+        "Details about hair type": {
+            "Vata": "Dry, brittle, frizzy",
+            "Pitta": "Thin, silky, prematurely gray or balding",
+            "Kapha": "Thick, oily, wavy"
+        },
+        "Texture of hair ": {
+            "Vata": "Coarse and dry",
+            "Pitta": "Soft and fine",
+            "Kapha": "Smooth and thick"
+        },
+        "My hairs are": {
+            "Vata": "Thin and dry",
+            "Pitta": "Soft and light-colored",
+            "Kapha": "Dense and strong"
+        },
+        "Hair falling tendency\t": {
+            "Vata": "Frequent breakage",
+            "Pitta": "Tendency for early hair fall or balding",
+            "Kapha": "Less prone to fall"
+        },
+        "Eyes\t": {
+            "Vata": "Small, dry, nervous blinking",
+            "Pitta": "Sharp, penetrating, red-tinted",
+            "Kapha": "Large, calm, moist"
+        },
+        "My eyes  eye balls are": {
+            "Vata": "Sunken and dull",
+            "Pitta": "Sharp and fiery",
+            "Kapha": "Clear and stable"
+        },
+        "Physique\t": {
+            "Vata": "Thin, underweight, bony",
+            "Pitta": "Moderate, muscular build",
+            "Kapha": "Heavy, solid, well-developed"
+        },
+        "Veins\t": {
+            "Vata": "Visible and prominent",
+            "Pitta": "Moderately visible",
+            "Kapha": "Not easily visible"
+        },
+        "Usual body temperature \t": {
+            "Vata": "Cold hands and feet",
+            "Pitta": "Warm or hot body",
+            "Kapha": "Cool and clammy"
+        },
+        "Teeth \t": {
+            "Vata": "Irregular, protruding",
+            "Pitta": "Medium, reddish gums",
+            "Kapha": "Strong, white, well-formed"
+        },
+        "Is your lips\t": {
+            "Vata": "Dark and dry",
+            "Pitta": "Red and soft",
+            "Kapha": "Pale and moist"
+        },
+        "Hands(Length)": {
+            "Vata": "Long and narrow",
+            "Pitta": "Moderate and warm",
+            "Kapha": "Short and broad"
+        },
+        "Body hair\t": {
+            "Vata": "Scanty",
+            "Pitta": "Moderate",
+            "Kapha": "Thick"
+        },
+        "Joints\t": {
+            "Vata": "Prominent and cracking",
+            "Pitta": "Moderate and stable",
+            "Kapha": "Strong and well-lubricated"
+        },
+        "Chest\t": {
+            "Vata": "Flat and narrow",
+            "Pitta": "Medium and prominent",
+            "Kapha": "Broad and expanded"
+        },
+        "Tongue\t": {
+            "Vata": "Dry and cracked",
+            "Pitta": "Red and moist",
+            "Kapha": "Thick and pale"
+        },
+        "Body frame (Length)\t": {
+            "Vata": "Tall or very short",
+            "Pitta": "Moderate",
+            "Kapha": "Short and stocky"
+        },
+        "Body frame (Breadth)\t": {
+            "Vata": "Narrow",
+            "Pitta": "Medium",
+            "Kapha": "Broad"
+        },
+        "Bodyweight changes\t": {
+            "Vata": "Easily loses weight",
+            "Pitta": "Stable weight",
+            "Kapha": "Gains weight easily"
+        },
+        "Style of speaking\t": {
+            "Vata": "Fast, unclear",
+            "Pitta": "Sharp, articulate",
+            "Kapha": "Slow, melodious"
+        },
+        "Voice \t": {
+            "Vata": "Low and hoarse",
+            "Pitta": "Clear and intense",
+            "Kapha": "Deep and sweet"
+        },
+        "Walk \t": {
+            "Vata": "Quick, irregular",
+            "Pitta": "Steady and purposeful",
+            "Kapha": "Slow and steady"
+        },
+        "Appetite \t ": {
+            "Vata": "Irregular",
+            "Pitta": "Strong",
+            "Kapha": "Mild"
+        },
+        "Intensity of hunger\t": {
+            "Vata": "Variable",
+            "Pitta": "Strong and frequent",
+            "Kapha": "Low"
+        },
+        "Favorite climate\t": {
+            "Vata": "Warm and moist",
+            "Pitta": "Cool and dry",
+            "Kapha": "Warm and dry"
+        },
+        "Stamina\t": {
+            "Vata": "Low and variable",
+            "Pitta": "Moderate",
+            "Kapha": "High and steady"
+        },
+        "Tastes, I like most": {
+            "Vata": "Sweet, sour, salty",
+            "Pitta": "Sweet, bitter, astringent",
+            "Kapha": "Pungent, bitter, astringent"
+        },
+        "Eagerness about drinking water": {
+            "Vata": "Less thirst",
+            "Pitta": "Strong thirst",
+            "Kapha": "Moderate thirst"
+        },
+        "Frequency of liquid intake\t": {
+            "Vata": "Low",
+            "Pitta": "High",
+            "Kapha": "Moderate"
+        },
+        "Sleep\t": {
+            "Vata": "Light and disturbed",
+            "Pitta": "Moderate",
+            "Kapha": "Deep and long"
+        },
+        "Quantity of sweat\t": {
+            "Vata": "Minimal",
+            "Pitta": "Profuse",
+            "Kapha": "Moderate"
+        },
+        "Emotion\t": {
+            "Vata": "Fear and anxiety",
+            "Pitta": "Anger and irritation",
+            "Kapha": "Calm and loving"
+        },
+        "Intellect\t": {
+            "Vata": "Quick but forgetful",
+            "Pitta": "Sharp and precise",
+            "Kapha": "Slow but steady"
+        },
+        "Grasping\t": {
+            "Vata": "Fast but inconsistent",
+            "Pitta": "Quick and accurate",
+            "Kapha": "Slow and thorough"
+        },
+        "Concentration\t": {
+            "Vata": "Short attention span",
+            "Pitta": "Intense focus",
+            "Kapha": "Steady and long-lasting"
+        },
+        "Memory\t": {
+            "Vata": "Poor short-term memory",
+            "Pitta": "Good analytical memory",
+            "Kapha": "Excellent long-term memory"
+        },
+        "Temperament\t": {
+            "Vata": "Restless",
+            "Pitta": "Aggressive",
+            "Kapha": "Peaceful"
+        },
+        "Patience\t": {
+            "Vata": "Low",
+            "Pitta": "Moderate",
+            "Kapha": "High"
+        },
+        "Satisfaction/content\t": {
+            "Vata": "Rarely satisfied",
+            "Pitta": "Seldom satisfied",
+            "Kapha": "Content"
+        },
+        "While making decisions\t": {
+            "Vata": "Indecisive",
+            "Pitta": "Decisive",
+            "Kapha": "Slow but firm"
+        },
+        "Activities\t": {
+            "Vata": "Unpredictable",
+            "Pitta": "Goal-oriented",
+            "Kapha": "Consistent"
+        },
+        "Nature of dreams\t": {
+            "Vata": "Flying or fearful",
+            "Pitta": "Fiery or competitive",
+            "Kapha": "Romantic or watery"
+        },
+        "Friendships & relations\t": {
+            "Vata": "Fleeting",
+            "Pitta": "Selective",
+            "Kapha": "Loyal and lasting"
+        },
+        "Faith in God\t": {
+            "Vata": "Variable",
+            "Pitta": "Pragmatic",
+            "Kapha": "Deep and devotional"
+        },
+        "Self-control\t": {
+            "Vata": "Low",
+            "Pitta": "Moderate",
+            "Kapha": "High"
+        },
+        "Gratefulness\t": {
+            "Vata": "Sometimes forgetful",
+            "Pitta": "Moderate",
+            "Kapha": "Always thankful"
+        },
+        "Likings\t": {
+            "Vata": "Change, movement",
+            "Pitta": "Challenges, leadership",
+            "Kapha": "Comfort, stability"
+        },
+        "Liking- type of food": {
+            "Vata": "Warm, oily",
+            "Pitta": "Cool, sweet",
+            "Kapha": "Spicy, dry"
+        },
+        "Politeness/humbleness": {
+            "Vata": "Variable",
+            "Pitta": "Proud and assertive",
+            "Kapha": "Very humble"
+        },
+        "Biting nails ": {
+            "Vata": "Very frequent",
+            "Pitta": "Sometimes under stress",
+            "Kapha": "Rarely"
+        },
+        "Fond of praise ": {
+            "Vata": "Yes, for reassurance",
+            "Pitta": "Yes, to validate competence",
+            "Kapha": "Less concerned"
+        },
+        "Brave": {
+            "Vata": "Fearful but curious",
+            "Pitta": "Naturally brave",
+            "Kapha": "Stable and calm courage"
+        },
+        "Egoistic": {
+            "Vata": "Not much",
+            "Pitta": "Very egoistic",
+            "Kapha": "Least egoistic"
+        }
+    };
+
+        // Global variables
+        let userName = '';
+        let userAge = '';
+        let currentPage = '';
+        let userEmail = '';
         
-        const incompletePayload = {
-            'Skin color': 1,
-            'Skin texture': 1
-        };
-        
-        const stringPayload = {};
-        for (const key in fullPayload) {
-            stringPayload[key] = fullPayload[key].toString();
+        // Check auth state on load
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in
+                userEmail = user.email;
+                loadMainPage();
+            } else {
+                // No user is signed in
+                loadLoginPage();
+            }
+        });
+
+        // Load login page
+        function loadLoginPage() {
+            currentPage = 'login';
+            document.getElementById('app-container').innerHTML = `
+                <div class="auth-container min-h-screen flex items-center justify-center p-4">
+                    <div class="bg-white bg-opacity-90 p-8 rounded-lg max-w-md w-full shadow-lg">
+                        <h2 class="text-3xl font-bold mb-6 text-center title-font text-amber-800">Welcome to Prakruti Nischikaran</h2>
+                        
+                        <div id="login-form">
+                            <div class="mb-4">
+                                <label for="login-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" id="login-email" class="w-full px-3 py-2 border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                                <input type="password" id="login-password" class="w-full px-3 py-2 border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            
+                            <button id="login-btn" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded transition duration-300 mb-4">
+                                Login
+                            </button>
+                            
+                            <p class="text-center text-sm text-gray-600">Don't have an account? 
+                                <button id="show-signup" class="text-amber-600 hover:underline">Sign up</button>
+                            </p>
+                        </div>
+                        
+                        <div id="signup-form" class="hidden">
+                            <div class="mb-4">
+                                <label for="signup-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" id="signup-email" class="w-full px-3 py-2 border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="signup-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                                <input type="password" id="signup-password" class="w-full px-3 py-2 border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label for="signup-confirm" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                                <input type="password" id="signup-confirm" class="w-full px-3 py-2 border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            
+                            <button id="signup-btn" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded transition duration-300 mb-4">
+                                Create Account
+                            </button>
+                            
+                            <p class="text-center text-sm text-gray-600">Already have an account? 
+                                <button id="show-login" class="text-amber-600 hover:underline">Login</button>
+                            </p>
+                        </div>
+                        
+                        <div id="auth-message" class="mt-4 text-center text-sm hidden"></div>
+                    </div>
+                </div>
+            `;
+            
+            // Add event listeners
+            document.getElementById('show-signup')?.addEventListener('click', () => {
+                document.getElementById('login-form').classList.add('hidden');
+                document.getElementById('signup-form').classList.remove('hidden');
+            });
+            
+            document.getElementById('show-login')?.addEventListener('click', () => {
+                document.getElementById('signup-form').classList.add('hidden');
+                document.getElementById('login-form').classList.remove('hidden');
+            });
+            
+            document.getElementById('login-btn')?.addEventListener('click', handleLogin);
+            document.getElementById('signup-btn')?.addEventListener('click', handleSignup);
         }
         
-        // Display payloads in viewers
-        document.getElementById('fullPayloadViewer').textContent = JSON.stringify(fullPayload, null, 2);
-        document.getElementById('incompletePayloadViewer').textContent = JSON.stringify(incompletePayload, null, 2);
-        document.getElementById('stringPayloadViewer').textContent = JSON.stringify(stringPayload, null, 2);
-        
-        // Test Home Endpoint
-        document.getElementById('testHomeBtn').addEventListener('click', async function() {
-            const resultDiv = document.getElementById('homeResult');
-            const loadingSpan = document.getElementById('homeLoading');
+        // Handle login
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const messageEl = document.getElementById('auth-message');
             
-            resultDiv.classList.add('hidden');
-            loadingSpan.classList.remove('hidden');
-            
-            try {
-                const startTime = performance.now();
-                const response = await fetch(`${baseUrl}/`);
-                const endTime = performance.now();
-                
-                let resultText = `Status Code: ${response.status}\n`;
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    resultText += `Response: ${JSON.stringify(data, null, 2)}\n\n`;
-                    resultText += `<span class="success">✅ Home endpoint test passed</span>`;
-                } else {
-                    resultText += `Response: ${await response.text()}\n\n`;
-                    resultText += `<span class="error">❌ Home endpoint test failed</span>`;
-                }
-                
-                resultDiv.innerHTML = resultText;
-                resultDiv.classList.remove('hidden');
-            } catch (error) {
-                resultDiv.innerHTML = `Error: ${error.message}\n\n<span class="error">❌ Home endpoint test failed with error</span>`;
-                resultDiv.classList.remove('hidden');
-            } finally {
-                loadingSpan.classList.add('hidden');
+            if (!email || !password) {
+                showAuthMessage('Please enter both email and password', 'red');
+                return;
             }
-        });
-        
-        // Test Prediction Endpoint
-        document.getElementById('testPredictBtn').addEventListener('click', async function() {
-            const resultDiv = document.getElementById('predictResult');
-            const timeDiv = document.getElementById('predictTime');
-            const loadingSpan = document.getElementById('predictLoading');
-            
-            resultDiv.classList.add('hidden');
-            timeDiv.classList.add('hidden');
-            loadingSpan.classList.remove('hidden');
             
             try {
-                const startTime = performance.now();
-                const response = await fetch(`${baseUrl}/predict`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(fullPayload)
+                const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                // Success - onAuthStateChanged will handle the redirect
+                localStorage.setItem('userLoggedIn', 'true');
+                localStorage.setItem('userEmail', email);
+            } catch (error) {
+                showAuthMessage(error.message, 'red');
+            }
+        }
+        
+        // Handle signup
+        async function handleSignup() {
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const confirm = document.getElementById('signup-confirm').value;
+            const messageEl = document.getElementById('auth-message');
+            
+            if (!email || !password || !confirm) {
+                showAuthMessage('Please fill all fields', 'red');
+                return;
+            }
+            
+            if (password !== confirm) {
+                showAuthMessage('Passwords do not match', 'red');
+                return;
+            }
+            
+            try {
+                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                showAuthMessage('Account created successfully! Please login.', 'green');
+                document.getElementById('signup-form').classList.add('hidden');
+                document.getElementById('login-form').classList.remove('hidden');
+            } catch (error) {
+                showAuthMessage(error.message, 'red');
+            }
+        }
+        
+        // Show auth message
+        function showAuthMessage(message, color) {
+            const messageEl = document.getElementById('auth-message');
+            messageEl.textContent = message;
+            messageEl.style.color = color === 'red' ? '#ef4444' : '#10b981';
+            messageEl.classList.remove('hidden');
+            
+            setTimeout(() => {
+                messageEl.classList.add('hidden');
+            }, 5000);
+        }
+        
+        // Load main page
+        function loadMainPage() {
+            currentPage = 'main';
+            document.getElementById('app-container').innerHTML = `
+                <div class="container mx-auto px-4 py-8">
+                    <!-- Header -->
+                    <header class="ayurveda-bg rounded-xl p-6 mb-8 shadow-md">
+                        <h1 id="welcomeHeader" class="text-3xl md:text-4xl font-bold mb-2 text-center title-font text-amber-900">Prakruti Nischikaran</h1>
+                        <p id="welcomeSubtitle" class="text-lg text-center text-amber-800 max-w-3xl mx-auto">Discover your Ayurvedic constitution (Prakruti) and learn how to balance your doshas for optimal health</p>
+                    </header>
+
+                    <!-- User Info Modal -->
+                    <div id="userModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div class="bg-white p-8 rounded-lg max-w-md w-full mx-4">
+                            <h2 class="text-2xl font-bold mb-4 text-center title-font text-amber-800">Welcome to Prakruti Nischikaran</h2>
+                            <p class="mb-6 text-center">Discover your Ayurvedic constitution by answering simple questions about your physical and mental characteristics.</p>
+                            
+                            <div class="mb-4">
+                                <label for="userName" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                                <input type="text" id="userName" class="w-full px-3 py-2 border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label for="userAge" class="block text-sm font-medium text-gray-700 mb-1">Your Age</label>
+                                <input type="number" id="userAge" class="w-full px-3 py-2 border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            </div>
+                            
+                            <button id="startBtn" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded transition duration-300">
+                                Begin Analysis
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Questionnaire Section -->
+                    <div class="mb-8 flex flex-wrap justify-between items-center">
+                        <h2 class="text-2xl font-bold mb-4 title-font text-amber-800">Questionnaire</h2>
+                        <div>
+                            <button id="logout-btn" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition duration-300 mr-2">
+                                Logout
+                            </button>
+                            <button id="randomizeBtn" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-md transition duration-300">
+                                Randomize All Answers
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="questionnaire" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"></div>
+                    
+                    <div class="text-center">
+                        <button id="submit-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 shadow-md">
+                            Analyze My Prakruti
+                        </button>
+                    </div>
+                    
+                    <!-- Loading Indicator -->
+                    <div class="loading hidden text-center my-8">
+                        <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-600 mb-4"></div>
+                        <p class="text-lg text-amber-800">Analyzing your responses...</p>
+                    </div>
+                    
+                    <!-- Results Section -->
+                    <div id="result-container" class="hidden bg-white rounded-xl p-6 my-8 shadow-lg border border-amber-200">
+                        <h2 class="text-2xl font-bold mb-6 text-center title-font text-amber-800">Your Prakruti Analysis</h2>
+                        <div id="result-content" class="space-y-6"></div>
+                        
+                        <div id="prakruti-details" class="mt-8 p-6 rounded-lg bg-amber-50 border border-amber-200 hidden">
+                            <h3 class="text-xl font-bold mb-4 title-font text-amber-800">About Your Prakruti</h3>
+                            <div id="prakruti-info" class="prose max-w-none"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Check if we have user info
+            const storedName = localStorage.getItem('userName');
+            const storedAge = localStorage.getItem('userAge');
+            
+            if (storedName && storedAge) {
+                userName = storedName;
+                userAge = storedAge;
+                updateWelcomeHeader();
+                renderQuestions();
+            } else {
+                // Show user modal
+                document.getElementById('userModal').classList.remove('hidden');
+                
+                // Start button click handler
+                document.getElementById('startBtn').addEventListener('click', () => {
+                    userName = document.getElementById('userName').value.trim();
+                    userAge = document.getElementById('userAge').value.trim();
+                    
+                    if (!userName) {
+                        alert('Please enter your name');
+                        return;
+                    }
+                    
+                    localStorage.setItem('userName', userName);
+                    localStorage.setItem('userAge', userAge);
+                    
+                    document.getElementById('userModal').classList.add('hidden');
+                    updateWelcomeHeader();
+                    renderQuestions();
                 });
-                const endTime = performance.now();
-                const responseTime = (endTime - startTime).toFixed(2);
-                
-                timeDiv.textContent = `Response time: ${responseTime} ms`;
-                timeDiv.classList.remove('hidden');
-                
-                let resultText = `Status Code: ${response.status}\n`;
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    resultText += `Response:\n`;
-                    resultText += `Prediction: ${data.prediction || 'Not found'}\n`;
-                    resultText += `Probabilities:\n`;
-                    for (const [dosha, prob] of Object.entries(data.probabilities || {})) {
-                        resultText += `  ${dosha}: ${prob.toFixed(4)}\n`;
-                    }
-                    resultText += `\n<span class="success">✅ Prediction endpoint test passed</span>`;
-                } else {
-                    resultText += `Response: ${await response.text()}\n\n`;
-                    resultText += `<span class="error">❌ Prediction endpoint test failed</span>`;
-                }
-                
-                resultDiv.innerHTML = resultText;
-                resultDiv.classList.remove('hidden');
-            } catch (error) {
-                resultDiv.innerHTML = `Error: ${error.message}\n\n<span class="error">❌ Prediction endpoint test failed with error</span>`;
-                resultDiv.classList.remove('hidden');
-            } finally {
-                loadingSpan.classList.add('hidden');
             }
-        });
-        
-        // Test Error Handling
-        document.getElementById('testErrorBtn').addEventListener('click', async function() {
-            const resultDiv = document.getElementById('errorResult');
-            const loadingSpan = document.getElementById('errorLoading');
             
-            resultDiv.classList.add('hidden');
-            loadingSpan.classList.remove('hidden');
+            // Add other event listeners
+            document.getElementById('randomizeBtn').addEventListener('click', randomizeAnswers);
+            document.getElementById('submit-btn').addEventListener('click', submitAnswers);
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+        }
+        
+        // Handle logout
+        function handleLogout() {
+            firebase.auth().signOut().then(() => {
+                localStorage.removeItem('userLoggedIn');
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('userAge');
+                loadLoginPage();
+            });
+        }
+        
+        // Update welcome header with user info
+        function updateWelcomeHeader() {
+            const welcomeHeader = document.getElementById('welcomeHeader');
+            const welcomeSubtitle = document.getElementById('welcomeSubtitle');
+            
+            if (welcomeHeader && welcomeSubtitle) {
+                welcomeHeader.textContent = `Welcome, ${userName}`;
+                welcomeSubtitle.textContent = `Discover your Ayurvedic constitution (Prakruti) at age ${userAge} and learn how to balance your doshas for optimal health`;
+            }
+        }
+        
+        // Render all questions in 2-column layout
+        function renderQuestions() {
+            const container = document.getElementById('questionnaire');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            Object.entries(prakruthiQuestions).forEach(([question, options]) => {
+                const card = document.createElement('div');
+                card.className = 'question-card p-5 rounded-lg shadow-sm';
+                
+                // Question header
+                const header = document.createElement('h3');
+                header.className = 'text-lg font-semibold mb-3 text-amber-900';
+                header.textContent = question;
+                card.appendChild(header);
+                
+                // Options container
+                const optionsDiv = document.createElement('div');
+                optionsDiv.className = 'space-y-2';
+                
+                // Pitta option
+                const pittaDiv = createRadioOption(question, 'Pitta', options.Pitta, '1', 'pitta');
+                optionsDiv.appendChild(pittaDiv);
+                
+                // Vata option
+                const vataDiv = createRadioOption(question, 'Vata', options.Vata, '2', 'vata');
+                vataDiv.querySelector('input').checked = true;
+                optionsDiv.appendChild(vataDiv);
+                
+                // Kapha option
+                const kaphaDiv = createRadioOption(question, 'Kapha', options.Kapha, '3', 'kapha');
+                optionsDiv.appendChild(kaphaDiv);
+                
+                card.appendChild(optionsDiv);
+                container.appendChild(card);
+            });
+        }
+        
+        // Helper function to create radio option
+        function createRadioOption(question, dosha, text, value, doshaClass) {
+            const div = document.createElement('div');
+            div.className = 'flex items-center';
+            
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = question;
+            input.id = `${question}-${dosha.toLowerCase()}`;
+            input.value = value;
+            input.className = `h-4 w-4 text-${doshaClass}-600 focus:ring-${doshaClass}-500 border-gray-300`;
+            
+            const label = document.createElement('label');
+            label.htmlFor = `${question}-${dosha.toLowerCase()}`;
+            label.className = 'ml-3 block text-sm font-medium text-gray-700';
+            label.textContent = text;
+            
+            div.appendChild(input);
+            div.appendChild(label);
+            return div;
+        }
+        
+        // Randomize all answers
+        function randomizeAnswers() {
+            Object.keys(prakruthiQuestions).forEach(question => {
+                const options = document.querySelectorAll(`input[name="${question}"]`);
+                const randomIndex = Math.floor(Math.random() * options.length);
+                options[randomIndex].checked = true;
+            });
+            
+            // Show notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-md shadow-lg';
+            notification.textContent = 'All answers randomized!';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 2000);
+        }
+        
+        // Submit answers to API
+        async function submitAnswers() {
+            const formData = {};
+            let allAnswered = true;
+            
+            // Collect answers
+            Object.keys(prakruthiQuestions).forEach(question => {
+                const selectedOption = document.querySelector(`input[name="${question}"]:checked`);
+                if (selectedOption) {
+                    formData[question] = parseInt(selectedOption.value);
+                } else {
+                    allAnswered = false;
+                    const card = document.querySelector(`input[name="${question}"]`).closest('.question-card');
+                    card.classList.add('ring-2', 'ring-red-500');
+                }
+            });
+            
+            if (!allAnswered) {
+                alert('Please answer all questions before submitting.');
+                return;
+            }
+            
+            // Show loading
+            document.querySelector('.loading').classList.remove('hidden');
+            document.getElementById('submit-btn').classList.add('hidden');
             
             try {
-                const response = await fetch(`${baseUrl}/predict`, {
+                // Call prediction API
+                const predictionResponse = await fetch('https://prakruthinischikaran-api.onrender.com/predict', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(incompletePayload)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
                 });
                 
-                let resultText = `Status Code: ${response.status}\n`;
+                if (!predictionResponse.ok) throw new Error(`API request failed with status ${predictionResponse.status}`);
                 
-                if (response.status === 400) {
-                    const data = await response.json();
-                    resultText += `Response: ${JSON.stringify(data, null, 2)}\n\n`;
-                    resultText += `<span class="success">✅ Error handling test passed (correctly detected missing features)</span>`;
-                } else {
-                    resultText += `Response: ${await response.text()}\n\n`;
-                    resultText += `<span class="error">❌ Error handling test failed (should return 400 for missing features)</span>`;
-                }
+                const result = await predictionResponse.json();
+                displayResult(result);
                 
-                resultDiv.innerHTML = resultText;
-                resultDiv.classList.remove('hidden');
+                // Call Gemini API for Prakruti details
+                const prakritiType = result.prediction.toLowerCase();
+                const geminiResponse = await fetchGeminiInfo(prakritiType);
+                displayPrakrutiDetails(geminiResponse);
+                
             } catch (error) {
-                resultDiv.innerHTML = `Error: ${error.message}\n\n<span class="error">❌ Error handling test failed with error</span>`;
-                resultDiv.classList.remove('hidden');
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
             } finally {
-                loadingSpan.classList.add('hidden');
+                document.querySelector('.loading').classList.add('hidden');
+                document.getElementById('submit-btn').classList.remove('hidden');
             }
-        });
+        }
         
-        // Test String Conversion
-        document.getElementById('testStringBtn').addEventListener('click', async function() {
-            const resultDiv = document.getElementById('stringResult');
-            const loadingSpan = document.getElementById('stringLoading');
-            
-            resultDiv.classList.add('hidden');
-            loadingSpan.classList.remove('hidden');
-            
+        // Fetch info from Gemini API
+        async function fetchGeminiInfo(prakritiType) {
             try {
-                const response = await fetch(`${baseUrl}/predict`, {
+                const apiKey = "AIzaSyBVllViKO5LGZq9nYqbuyRID5mq9CYD4NA";
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+                
+                const prompt = `Provide detailed information about ${prakritiType} prakriti in Ayurveda. 
+                Include: 
+                1. A description of ${prakritiType} constitution
+                2. Key characteristics (as bullet points)
+                3. Health recommendations (as bullet points)
+                4. Lifestyle suggestions
+                5. Aroma suggestion(what a person will be fond of smelling- aroma therapy)
+                6. visual suggestion(what user will be fond of seeing)
+                7. rage suggestion(what user will be fond of listening)
+
+                Format the response in JSON with these keys: description, characteristics, recommendations, lifestyle,aroma,visual,raga.`;
+                
+                const response = await fetch(url, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(stringPayload)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: prompt }]
+                        }]
+                    })
                 });
                 
-                let resultText = `Status Code: ${response.status}\n`;
+                if (!response.ok) throw new Error('Gemini API request failed');
                 
-                if (response.ok) {
-                    const data = await response.json();
-                    resultText += `Response: ${JSON.stringify(data, null, 2)}\n\n`;
-                    resultText += `<span class="success">✅ String conversion test passed (API successfully converted strings to integers)</span>`;
-                } else {
-                    resultText += `Response: ${await response.text()}\n\n`;
-                    resultText += `<span class="error">❌ String conversion test failed</span>`;
+                const data = await response.json();
+                const textResponse = data.candidates[0].content.parts[0].text;
+                
+                // Try to parse the JSON response from Gemini
+                try {
+                    // Sometimes Gemini returns text with markdown code blocks
+                    const jsonStart = textResponse.indexOf('{');
+                    const jsonEnd = textResponse.lastIndexOf('}') + 1;
+                    const jsonString = textResponse.slice(jsonStart, jsonEnd);
+                    return JSON.parse(jsonString);
+                } catch (e) {
+                    console.error('Error parsing Gemini response:', e);
+                    // Fallback to mock data if parsing fails
+                    return getMockPrakritiData(prakritiType);
                 }
                 
-                resultDiv.innerHTML = resultText;
-                resultDiv.classList.remove('hidden');
             } catch (error) {
-                resultDiv.innerHTML = `Error: ${error.message}\n\n<span class="error">❌ String conversion test failed with error</span>`;
-                resultDiv.classList.remove('hidden');
-            } finally {
-                loadingSpan.classList.add('hidden');
+                console.error('Error fetching Gemini info:', error);
+                // Return mock data if API fails
+                return getMockPrakritiData(prakritiType);
             }
-        });
+        }
         
-        // Run All Tests
-        document.getElementById('runAllBtn').addEventListener('click', async function() {
-            const resultDiv = document.getElementById('allResults');
-            const loadingSpan = document.getElementById('allLoading');
+        // Mock data fallback
+        function getMockPrakritiData(prakritiType) {
+            const mockData = {
+                "vata": {
+                    "description": "Vata is characterized by qualities of air and space. People with Vata prakriti are often creative, energetic, and lively when in balance. They tend to be thin, light, and quick in their thoughts and actions. When out of balance, Vata types may experience anxiety, insomnia, or digestive issues.",
+                    "characteristics": [
+                        "Light, thin build",
+                        "Dry skin and hair",
+                        "Cold hands and feet",
+                        "Irregular hunger and digestion",
+                        "Quick to learn and quick to forget",
+                        "Enthusiastic, vivacious, imaginative"
+                    ],
+                    "recommendations": [
+                        "Follow a regular daily routine",
+                        "Eat warm, moist, nourishing foods",
+                        "Avoid cold, dry, raw foods",
+                        "Practice gentle, grounding yoga",
+                        "Get plenty of rest",
+                        "Meditate to calm the mind"
+                    ],
+                    "lifestyle": "Maintain a regular routine with consistent meal times and sleep schedule. Engage in calming activities like meditation and gentle yoga. Stay warm and avoid excessive stimulation."
+                },
+                "pitta": {
+                    "description": "Pitta is composed of fire and water elements. Pitta types tend to be of medium build with good muscle tone. They are intelligent, focused, and ambitious with a sharp memory. When out of balance, Pitta can manifest as anger, inflammation, or skin rashes.",
+                    "characteristics": [
+                        "Medium, muscular build",
+                        "Warm body temperature",
+                        "Sharp intellect",
+                        "Strong digestion",
+                        "Fair or reddish complexion",
+                        "Leadership qualities"
+                    ],
+                    "recommendations": [
+                        "Stay cool physically and emotionally",
+                        "Eat cooling, sweet, bitter foods",
+                        "Avoid spicy, sour, salty foods",
+                        "Practice moderation in all activities",
+                        "Engage in calming exercises like swimming",
+                        "Avoid excessive sun exposure"
+                    ],
+                    "lifestyle": "Avoid excessive heat and direct sun. Engage in cooling activities like swimming. Practice moderation in work and play. Cultivate patience and compassion."
+                },
+                "kapha": {
+                    "description": "Kapha is made of earth and water elements. Kapha types typically have strong, sturdy builds with excellent stamina. They are calm, loving, and forgiving with steady energy. When out of balance, Kapha can lead to weight gain, sluggishness, or attachment.",
+                    "characteristics": [
+                        "Solid, heavy build",
+                        "Smooth, glowing skin",
+                        "Thick, lustrous hair",
+                        "Calm, patient personality",
+                        "Excellent stamina",
+                        "Slow to anger"
+                    ],
+                    "recommendations": [
+                        "Engage in regular vigorous exercise",
+                        "Eat light, dry, warm foods",
+                        "Avoid heavy, oily, cold foods",
+                        "Try new experiences and changes",
+                        "Wake up early and avoid naps",
+                        "Use invigorating scents like eucalyptus"
+                    ],
+                    "lifestyle": "Maintain an active lifestyle with regular exercise. Seek variety and new experiences. Avoid excessive sleep and sedentary habits. Stay warm and dry in damp weather."
+                }
+            };
             
-            resultDiv.classList.add('hidden');
-            loadingSpan.classList.remove('hidden');
+            return mockData[prakritiType];
+        }
+        
+        // Display prediction result
+        function displayResult(result) {
+            const resultContainer = document.getElementById('result-container');
+            const resultContent = document.getElementById('result-content');
             
-            let allResultsText = "===== Running All Tests =====\n\n";
+            resultContent.innerHTML = '';
             
-            // Function to update results
-            function updateResults(text) {
-                allResultsText += text + "\n\n";
-                resultDiv.textContent = allResultsText;
-                resultDiv.classList.remove('hidden');
+            if (result.prediction) {
+                const predictionDiv = document.createElement('div');
+                predictionDiv.className = 'text-center mb-6';
+                
+                const predictionText = document.createElement('h3');
+                predictionText.className = 'text-2xl font-bold mb-2';
+                predictionText.innerHTML = `Your predominant Prakruti is: <span class="dosha-${result.prediction.toLowerCase()} font-bold px-2 py-1 rounded">${result.prediction}</span>`;
+                predictionDiv.appendChild(predictionText);
+                
+                const userInfo = document.createElement('p');
+                userInfo.className = 'text-gray-600';
+                userInfo.textContent = `${userName}, ${userAge} years`;
+                predictionDiv.appendChild(userInfo);
+                
+                resultContent.appendChild(predictionDiv);
             }
             
-            try {
-                // Test Home Endpoint
-                updateResults("===== Testing Home Endpoint =====");
-                try {
-                    const startTime = performance.now();
-                    const response = await fetch(`${baseUrl}/`);
-                    const endTime = performance.now();
+            if (result.scores) {
+                const scoresDiv = document.createElement('div');
+                scoresDiv.className = 'mb-6';
+                
+                const scoresTitle = document.createElement('h4');
+                scoresTitle.className = 'text-xl font-semibold mb-3 text-amber-800';
+                scoresTitle.textContent = 'Detailed Dosha Scores:';
+                scoresDiv.appendChild(scoresTitle);
+                
+                const scoresList = document.createElement('div');
+                scoresList.className = 'grid grid-cols-1 md:grid-cols-3 gap-4';
+                
+                for (const [dosha, score] of Object.entries(result.scores)) {
+                    const doshaDiv = document.createElement('div');
+                    doshaDiv.className = `p-4 rounded-lg shadow-sm dosha-${dosha.toLowerCase()}`;
                     
-                    let resultText = `Status Code: ${response.status}\n`;
+                    const doshaName = document.createElement('h5');
+                    doshaName.className = 'font-bold text-lg mb-1';
+                    doshaName.textContent = dosha;
+                    doshaDiv.appendChild(doshaName);
                     
-                    if (response.ok) {
-                        const data = await response.json();
-                        resultText += `Response: ${JSON.stringify(data, null, 2)}\n`;
-                        resultText += `✅ Home endpoint test passed`;
-                    } else {
-                        resultText += `Response: ${await response.text()}\n`;
-                        resultText += `❌ Home endpoint test failed`;
-                    }
+                    const scoreDiv = document.createElement('div');
+                    scoreDiv.className = 'flex items-center';
                     
-                    updateResults(resultText);
-                } catch (error) {
-                    updateResults(`Error: ${error.message}\n❌ Home endpoint test failed with error`);
+                    const scoreBar = document.createElement('div');
+                    scoreBar.className = 'flex-1 bg-white bg-opacity-50 h-4 rounded-full overflow-hidden mr-2';
+                    
+                    const scoreFill = document.createElement('div');
+                    scoreFill.className = `h-full bg-${dosha.toLowerCase()}-600`;
+                    scoreFill.style.width = `${(score / 100) * 100}%`;
+                    scoreBar.appendChild(scoreFill);
+                    
+                    scoreDiv.appendChild(scoreBar);
+                    
+                    const scoreText = document.createElement('span');
+                    scoreText.className = 'font-bold';
+                    scoreText.textContent = score;
+                    scoreDiv.appendChild(scoreText);
+                    
+                    doshaDiv.appendChild(scoreDiv);
+                    scoresList.appendChild(doshaDiv);
                 }
                 
-                // Test Prediction Endpoint
-                updateResults("===== Testing Prediction Endpoint =====");
-                try {
-                    const startTime = performance.now();
-                    const response = await fetch(`${baseUrl}/predict`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(fullPayload)
-                    });
-                    const endTime = performance.now();
-                    const responseTime = (endTime - startTime).toFixed(2);
-                    
-                    let resultText = `Status Code: ${response.status}\n`;
-                    resultText += `Response Time: ${responseTime} ms\n`;
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        resultText += `Prediction: ${data.prediction || 'Not found'}\n`;
-                        resultText += `Probabilities:\n`;
-                        for (const [dosha, prob] of Object.entries(data.probabilities || {})) {
-                            resultText += `  ${dosha}: ${prob.toFixed(4)}\n`;
-                        }
-                        resultText += `✅ Prediction endpoint test passed`;
-                    } else {
-                        resultText += `Response: ${await response.text()}\n`;
-                        resultText += `❌ Prediction endpoint test failed`;
-                    }
-                    
-                    updateResults(resultText);
-                } catch (error) {
-                    updateResults(`Error: ${error.message}\n❌ Prediction endpoint test failed with error`);
-                }
-                
-                // Test Error Handling
-                updateResults("===== Testing Error Handling (Missing Features) =====");
-                try {
-                    const response = await fetch(`${baseUrl}/predict`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(incompletePayload)
-                    });
-                    
-                    let resultText = `Status Code: ${response.status}\n`;
-                    
-                    if (response.status === 400) {
-                        const data = await response.json();
-                        resultText += `Response: ${JSON.stringify(data, null, 2)}\n`;
-                        resultText += `✅ Error handling test passed (correctly detected missing features)`;
-                    } else {
-                        resultText += `Response: ${await response.text()}\n`;
-                        resultText += `❌ Error handling test failed (should return 400 for missing features)`;
-                    }
-                    
-                    updateResults(resultText);
-                } catch (error) {
-                    updateResults(`Error: ${error.message}\n❌ Error handling test failed with error`);
-                }
-                
-                // Test String Conversion
-                updateResults("===== Testing Error Handling (Non-numeric Values) =====");
-                try {
-                    const response = await fetch(`${baseUrl}/predict`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(stringPayload)
-                    });
-                    
-                    let resultText = `Status Code: ${response.status}\n`;
-                    
-                    if (response.ok) {
-                        const data = await response.json();
-                        resultText += `Response: ${JSON.stringify(data, null, 2)}\n`;
-                        resultText += `✅ String conversion test passed (API successfully converted strings to integers)`;
-                    } else {
-                        resultText += `Response: ${await response.text()}\n`;
-                        resultText += `❌ String conversion test failed`;
-                    }
-                    
-                    updateResults(resultText);
-                } catch (error) {
-                    updateResults(`Error: ${error.message}\n❌ String conversion test failed with error`);
-                }
-                
-                updateResults("===== All API Tests Completed =====");
-            } finally {
-                loadingSpan.classList.add('hidden');
+                scoresDiv.appendChild(scoresList);
+                resultContent.appendChild(scoresDiv);
             }
-        });
+            
+            resultContainer.classList.remove('hidden');
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Display Prakruti details from Gemini
+        function displayPrakrutiDetails(details) {
+            if (!details) return;
+            
+            const detailsContainer = document.getElementById('prakruti-details');
+            const infoContent = document.getElementById('prakruti-info');
+            
+            infoContent.innerHTML = `
+            
+                <h4 class="font-bold text-lg mb-2">Description</h4>
+                <p class="mb-4">${details.description}</p>
+                <h4 class="font-bold text-lg mb-2">Aroma</h4>
+                <p class="mb-4">${details.aroma}</p>
+                <h4 class="font-bold text-lg mb-2">Visual</h4>
+                <p class="mb-4">${details.visual}</p>
+                <h4 class="font-bold text-lg mb-2">Raga</h4>
+                <p class="mb-4">${details.raga}</p>
+                <h4 class="font-bold text-lg mb-2">Characteristics</h4>
+                <ul class="list-disc pl-5 mb-4">
+                    ${details.characteristics.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+                
+                <h4 class="font-bold text-lg mb-2">Recommendations</h4>
+                <ul class="list-disc pl-5 mb-4">
+                    ${details.recommendations.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+                
+                ${details.lifestyle ? `
+                <h4 class="font-bold text-lg mb-2">Lifestyle Suggestions</h4>
+                <p class="mb-4">${details.lifestyle}</p>
+                ` : ''}
+                
+
+            `;
+            
+            detailsContainer.classList.remove('hidden');
+            
+        }
+        window.addEventListener('beforeunload', () => {
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userAge');
+    });
     </script>
 </body>
 </html>
