@@ -677,6 +677,7 @@
                 card.appendChild(optionsDiv);
                 container.appendChild(card);
             });
+            resetForm();
         }
         
         // Helper function to create radio option
@@ -719,6 +720,25 @@
                 notification.remove();
             }, 2000);
         }
+        function resetForm() {
+    Object.keys(prakruthiQuestions).forEach(question => {
+        const options = document.querySelectorAll(`input[name="${question}"]`);
+        options.forEach(option => {
+            option.checked = false;
+        });
+    });
+
+    // Show notification
+    const notification = document.createElement('div');
+    notification.className = 'fixed bottom-4 right-4 bg-yellow-500 text-white px-4 py-2 rounded-md shadow-lg';
+    notification.textContent = 'All answers cleared!';
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.remove();
+    }, 2000);
+}
+
         
         // Submit answers to API
         async function submitAnswers() {
@@ -1010,6 +1030,7 @@
         window.addEventListener('beforeunload', () => {
         localStorage.removeItem('userName');
         localStorage.removeItem('userAge');
+        resetForm();
     });
     </script>
 </body>
