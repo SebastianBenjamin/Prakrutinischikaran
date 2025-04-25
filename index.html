@@ -916,78 +916,99 @@
         
         // Display prediction result
         function displayResult(result) {
-            const resultContainer = document.getElementById('result-container');
-            const resultContent = document.getElementById('result-content');
-            
-            resultContent.innerHTML = '';
-            
-            if (result.prediction) {
-                const predictionDiv = document.createElement('div');
-                predictionDiv.className = 'text-center mb-6';
-                
-                const predictionText = document.createElement('h3');
-                predictionText.className = 'text-2xl font-bold mb-2';
-                predictionText.innerHTML = `Your predominant Prakruti is: <span class="dosha-${result.prediction.toLowerCase()} font-bold px-2 py-1 rounded">${result.prediction}</span>`;
-                predictionDiv.appendChild(predictionText);
-                
-                const userInfo = document.createElement('p');
-                userInfo.className = 'text-gray-600';
-                userInfo.textContent = `${userName}, ${userAge} years`;
-                predictionDiv.appendChild(userInfo);
-                
-                resultContent.appendChild(predictionDiv);
+    const resultContainer = document.getElementById('result-container');
+    const resultContent = document.getElementById('result-content');
+
+    resultContent.innerHTML = '';
+
+    if (result.prediction) {
+        const predictionDiv = document.createElement('div');
+        predictionDiv.className = 'text-center mb-6';
+
+        const predictionText = document.createElement('h3');
+        predictionText.className = 'text-2xl font-bold mb-2';
+        predictionText.innerHTML = `Your predominant Prakruti is: <span class="dosha-${result.prediction.toLowerCase()} font-bold px-2 py-1 rounded">${result.prediction}</span>`;
+        predictionDiv.appendChild(predictionText);
+
+        const userInfo = document.createElement('p');
+        userInfo.className = 'text-gray-600';
+        userInfo.textContent = `${userName}, ${userAge} years`;
+        predictionDiv.appendChild(userInfo);
+
+        resultContent.appendChild(predictionDiv);
+    }
+
+    if (result.probabilities) {
+        const scoresDiv = document.createElement('div');
+        scoresDiv.className = 'mb-6';
+
+        const scoresTitle = document.createElement('h4');
+        scoresTitle.className = 'text-xl font-semibold mb-3 text-amber-800';
+        scoresTitle.textContent = 'Detailed Dosha Scores:';
+        scoresDiv.appendChild(scoresTitle);
+
+        const scoresList = document.createElement('div');
+        scoresList.className = 'grid grid-cols-1 md:grid-cols-3 gap-4';
+
+        // Find the dosha with the maximum probability
+        let maxDosha = '';
+        let maxValue = 0;
+        for (const [dosha, value] of Object.entries(result.probabilities)) {
+            if (value > maxValue) {
+                maxValue = value;
+                maxDosha = dosha;
             }
-            
-            if (result.scores) {
-                const scoresDiv = document.createElement('div');
-                scoresDiv.className = 'mb-6';
-                
-                const scoresTitle = document.createElement('h4');
-                scoresTitle.className = 'text-xl font-semibold mb-3 text-amber-800';
-                scoresTitle.textContent = 'Detailed Dosha Scores:';
-                scoresDiv.appendChild(scoresTitle);
-                
-                const scoresList = document.createElement('div');
-                scoresList.className = 'grid grid-cols-1 md:grid-cols-3 gap-4';
-                
-                for (const [dosha, score] of Object.entries(result.scores)) {
-                    const doshaDiv = document.createElement('div');
-                    doshaDiv.className = `p-4 rounded-lg shadow-sm dosha-${dosha.toLowerCase()}`;
-                    
-                    const doshaName = document.createElement('h5');
-                    doshaName.className = 'font-bold text-lg mb-1';
-                    doshaName.textContent = dosha;
-                    doshaDiv.appendChild(doshaName);
-                    
-                    const scoreDiv = document.createElement('div');
-                    scoreDiv.className = 'flex items-center';
-                    
-                    const scoreBar = document.createElement('div');
-                    scoreBar.className = 'flex-1 bg-white bg-opacity-50 h-4 rounded-full overflow-hidden mr-2';
-                    
-                    const scoreFill = document.createElement('div');
-                    scoreFill.className = `h-full bg-${dosha.toLowerCase()}-600`;
-                    scoreFill.style.width = `${(score / 100) * 100}%`;
-                    scoreBar.appendChild(scoreFill);
-                    
-                    scoreDiv.appendChild(scoreBar);
-                    
-                    const scoreText = document.createElement('span');
-                    scoreText.className = 'font-bold';
-                    scoreText.textContent = score;
-                    scoreDiv.appendChild(scoreText);
-                    
-                    doshaDiv.appendChild(scoreDiv);
-                    scoresList.appendChild(doshaDiv);
-                }
-                
-                scoresDiv.appendChild(scoresList);
-                resultContent.appendChild(scoresDiv);
-            }
-            
-            resultContainer.classList.remove('hidden');
-            resultContainer.scrollIntoView({ behavior: 'smooth' });
         }
+
+        for (const [dosha, score] of Object.entries(result.probabilities)) {
+            const doshaDiv = document.createElement('div');
+            doshaDiv.className = 'p-4 rounded-lg shadow-sm ';
+
+            const doshaName = document.createElement('h5');
+            doshaName.className = 'font-bold text-lg mb-1';
+            doshaName.textContent = dosha;
+            doshaDiv.appendChild(doshaName);
+
+            const scoreDiv = document.createElement('div');
+            scoreDiv.className = 'flex items-center';
+
+            const scoreBar = document.createElement('div');
+            scoreBar.className = 'flex-1 bg-white bg-opacity-50 h-4 rounded-full overflow-hidden mr-2';
+
+            const scoreFill = document.createElement('div');
+            scoreFill.className = 'h-full rounded-full';
+            scoreFill.style.width = `${score * 100}%`;
+
+            
+            if (dosha === maxDosha) {
+                scoreFill.classList.add('bg-green-600'); // Green for highest
+                doshaDiv.classList.add("bg-green-100")
+            } else {
+                scoreFill.classList.add('bg-red-400'); // Light tomato for others
+                doshaDiv.classList.add("bg-red-100")
+
+            }
+
+            scoreBar.appendChild(scoreFill);
+            scoreDiv.appendChild(scoreBar);
+
+            const scoreText = document.createElement('span');
+            scoreText.className = 'font-bold';
+            scoreText.textContent = `${(score * 100).toFixed(2)}%`;
+            scoreDiv.appendChild(scoreText);
+
+            doshaDiv.appendChild(scoreDiv);
+            scoresList.appendChild(doshaDiv);
+        }
+
+        scoresDiv.appendChild(scoresList);
+        resultContent.appendChild(scoresDiv);
+    }
+
+    resultContainer.classList.remove('hidden');
+    resultContainer.scrollIntoView({ behavior: 'smooth' });
+}
+
         
         // Display Prakruti details from Gemini
         function displayPrakrutiDetails(details) {
