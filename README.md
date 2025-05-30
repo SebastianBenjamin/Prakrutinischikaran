@@ -1,149 +1,176 @@
+# 🌿 Prakriti Nishchikaran: Machine Learning for Ayurvedic Body Constitution Analysis
 
+## 📖 Table of Contents
+- [Introduction](#-introduction)
+- [Motivation](#-motivation)
+- [Team members](#-team-members)
+- [What is Prakriti?](#-what-is-prakriti)
+- [Features](#-features)
+- [Technical Implementation](#-technical-implementation)
+- [API Usage](#-api-usage)
+- [Model Evaluation](#-model-evaluation)
+- [Web Application](#-web-application)
+- [Applications & Future Scope](#-applications--future-scope)
+- [Acknowledgements](#-acknowledgements)
 
-# 🌿 Prakriti Nishchikaran API
+---
 
-An XGBoost-based Machine Learning API to determine Prakriti (body constitution) based on 40+ bio-behavioral traits from Ayurveda.
+## 🌟 Introduction
+
+Prakriti Nishchikaran is an innovative machine learning system that analyzes 40+ bio-behavioral traits to determine an individual's Ayurvedic body constitution (Prakriti) with 88.5% accuracy. This project bridges ancient Ayurvedic wisdom with modern technology, providing a standardized, scalable solution for Prakriti analysis.
 
 > 🔮 **Accuracy**: 88.5%  
-> 🚀 **Live API**: [API Link](https://prakruthinischikaran-api.onrender.com)  
-> 🧪 **Try API Interface**: [Test Webapp](https://api-prakritinischikaran.netlify.app/)
+> 🚀 **Live**: [link](https://prakrutinischikaran.netlify.app/)  
+
+---
+##  👨‍🏫 Team Members
+| Name                     | Role                           | Username                       |
+| ------------------------ | ------------------------------ | ------------------------------ |
+| **Dr. Krantee Jamdaade** | Mentor, Dataset Contributor    | Nil                            |
+| **Benjamin Sebastian**   | Full Stack Developer, ML Model | @SebastianBenjamin             |
+| **Arunima Pandey**       | Research & Frontend Developer  | @Arunima04                     |
 
 ---
 
-## 📌 Features
+## 💡 Motivation
 
-- Built using **XGBoost Classifier**  
-- Trained on a diverse set of **bio-behavioral traits**  
-- Hosted via **Render**  
-- Front-end test interface via **Netlify**  
-- Accepts JSON payload and returns Prakriti classification (`Vata`, `Pitta`, `Kapha`)
+The project was inspired by the story of Rajesh, a software engineer who suffered health collapse due to work stress. Traditional Ayurvedic diagnosis faced several challenges:
+
+- **Practitioner-dependent** results with high variability
+- **Limited accessibility** requiring in-person consultations
+- **Lack of standardization** in assessments
+- **Scarcity of experts**
+
+Our solution addresses these by:
+- Providing **objective analysis** through machine learning
+- Creating a **digital platform** accessible anywhere
+- Developing **quantifiable metrics** for human traits
+- Delivering **instant results** with high accuracy
 
 ---
 
-## 📂 Model Notebook
+## 🧘 What is Prakriti?
 
-The notebook file used for training and evaluation is included in this repository:  
-➡️ [`PrakritiNishchikaranModal.ipynb`](./PrakritiNishchikaranModal.ipynb)
+Prakriti refers to an individual's inherent **mind-body constitution**, determined by the unique combination of three doshas:
+
+- **Vata**: Associated with movement and creativity
+- **Pitta**: Governs metabolism and transformation
+- **Kapha**: Provides structure and lubrication
+
+Each person has a distinct ratio of these doshas that remains **constant throughout life**, serving as a unique biological blueprint for health and wellness.
 
 ---
 
-## 📤 API Usage
+## ✨ Features
+
+- **Advanced ML Model**: XGBoost classifier trained on 55+ bio-behavioral traits
+- **Standardized Framework**: Quantitative analysis of traditionally qualitative parameters
+- **Cloud Hosting**: 
+  - API hosted on **Render**
+  - Frontend interface on **Netlify**
+- **Comprehensive Output**:
+  - Primary Prakriti prediction
+  - Probabilities for all dosha combinations
+  - Integration with Google Gemini for detailed interpretations
+
+---
+
+## 💻 Technical Implementation
+
+### 🛠️ Model Development Journey
+
+1. **Data Collection**:
+   - Initial dataset with 71 columns from Ayurvedic research
+   - Added encoded Prakriti column (1=Pittaj, 2=Vataj, 3=Kaphaj)
+
+2. **Feature Selection**:
+   - Started with 5 key features:
+     - Usual body temperature
+     - Appetite
+     - Sleep patterns
+     - Emotion
+     - Physique
+   - Expanded to 55+ features after initial testing
+
+3. **Model Comparison**:
+   - Tested multiple algorithms:
+     - Random Forest
+     - KNN
+     - Decision Tree
+     - XGBoost
+     - Voting Classifier combinations
+   - **XGBoost** selected for its sequential learning and feature dependency handling
+
+4. **Preprocessing**:
+   - SMOTE for handling class imbalance
+   - Label Encoding for target variable
+   - Standard Scaling for feature normalization
+
+### 📊 Model Architecture
+
+```mermaid
+graph TD
+    A[Raw Data] --> B[Feature Selection]
+    B --> C[Preprocessing]
+    C --> D[Model Training]
+    D --> E[XGBoost Classifier]
+    E --> F[API Deployment]
+```
+
+---
+
+## 📡 API Usage
 
 ### 🔗 Endpoints
+
 ```bash
 GET / (Root URL)
 https://prakruthinischikaran-api.onrender.com
 ```
+
 ```bash
-POST / (Root URL)
+POST /predict
 https://prakruthinischikaran-api.onrender.com/predict
 ```
 
-### 📥 Sample Input Payload
+### 📥 Sample Input
+
 ```json
 {
+  "Skin color": 1,
+  "Skin texture": 1,
   "Hair quality": 1,
-  "Hair texture": 1,
-  ...
-  "Trust level": 1
+  ... [40+ additional features]
 }
 ```
 
-### 📤 Sample Responses
+### 📤 Sample Response
 
-#### For Home page
 ```json
-Status Code: 200
-Response: {
-  "instructions": "Send a POST request to /predict with feature values to get dosha prediction",
-  "message": "Welcome to the Dosha Prediction API"
-}
-```
-
-#### For /predict page
-```json
-
-Status Code: 200
-Response: {
+{
   "prediction": "Vataj",
   "probabilities": {
-    "Kaphaj": 0.006819805130362511,
-    "Kaphaj-Pittaj": 0.006921370979398489,
-    "Pittaj": 0.045854952186346054,
-    "Pittaj-Kaphaj": 0.08181353658437729,
-    "Pittaj-Vataj": 0.007285633124411106,
-    "Vataj": 0.701982855796814,
-    "Vataj-Pittaj": 0.14932186901569366
+    "Kaphaj": 0.0068,
+    "Kaphaj-Pittaj": 0.0069,
+    "Pittaj": 0.0458,
+    "Pittaj-Kaphaj": 0.0818,
+    "Pittaj-Vataj": 0.0072,
+    "Vataj": 0.7019,
+    "Vataj-Pittaj": 0.1493
   }
 }
 ```
 
----
-
-## 🧪 Test Script
-
-Use the following script to test locally or modify the URL for live usage:
+### 🧪 Test Script
 
 ```python
 import requests
 
-url = "https://prakruthinischikaran-api.onrender.com"  # Live URL
+url = "https://prakruthinischikaran-api.onrender.com/predict"
 data = {
-     'Skin color': 1,
-        'Skin texture': 1,
-        'Details about hair type': 1,
-        'Texture of hair ': 1,
-        'My hairs are': 1,
-        'Hair falling tendency\t': 1,
-        'Eyes\t': 1,
-        'My eyes  eye balls are': 1,
-        'Physique\t': 1,
-        'Veins\t': 1,
-        'Usual body temperature \t': 1,
-        'Teeth \t': 1,
-        'Is your lips\t': 2,
-        'Hands(Length)': 2,
-        'Body hair\t': 2,
-        'Joints\t': 2,
-        'Chest\t': 2,
-        'Tongue\t': 2,
-        'Body frame (Length)\t': 2,
-        'Body frame (Breadth)\t': 2,
-        'Bodyweight changes\t': 2,
-        'Style of speaking\t': 2,
-        'Voice \t': 2,
-        'Walk \t': 2,
-        'Appetite \t ': 2,
-        'Intensity of hunger\t': 2,
-        'Favorite climate\t': 2,
-        'Stamina\t': 2,
-        'Tastes, I like most': 2,
-        'Eagerness about drinking water': 2,
-        'Frequency of liquid intake\t': 2,
-        'Sleep\t': 2,
-        'Quantity of sweat\t': 2,
-        'Emotion\t': 2,
-        'Intellect\t': 2,
-        'Grasping\t': 2,
-        'Concentration\t': 2,
-        'Memory\t': 2,
-        'Temperament\t': 2,
-        'Patience\t': 2,
-        'Satisfaction/content\t': 2,
-        'While making decisions\t': 2,
-        'Activities\t': 2,
-        'Nature of dreams\t': 2,
-        'Friendships & relations\t': 2,
-        'Faith in God\t': 2,
-        'Self-control\t': 2,
-        'Gratefulness\t': 2,
-        'Likings\t': 2,
-        'Liking- type of food': 2,
-        'Politeness/humbleness':2,
-        'Biting nails ': 1,
-        'Fond of praise ': 1,
-        'Brave': 1,
-        'Egoistic': 1
+    "Skin color": 1,
+    "Skin texture": 1,
+    # ... [complete feature set]
 }
 
 response = requests.post(url, json=data)
@@ -153,29 +180,57 @@ print("Response:", response.json())
 
 ---
 
-## 📊 Model Evaluation
+## 📈 Model Evaluation
 
-### 🧠 Important Features
-![image](https://github.com/user-attachments/assets/25839d69-fdf3-4d2a-89e0-32e01967b984)
+### 🧠 Feature Importance
+![Feature Importance](https://github.com/user-attachments/assets/25839d69-fdf3-4d2a-89e0-32e01967b984)
 
-`🔲 Image showing feature importances from the XGBoost model`
+*Top influential features in the XGBoost model*
 
----
+### 📊 Classification Metrics
+![Classification Report](https://github.com/user-attachments/assets/cad84af7-7430-4e97-b292-7b29af5fa3d4)
 
-### 📈 Classification Report
-![image](https://github.com/user-attachments/assets/cad84af7-7430-4e97-b292-7b29af5fa3d4)
-
-`🔲 Screenshot or plot of precision, recall, f1-score for each class`
-
----
+*Precision, recall, and f1-scores for each dosha class*
 
 ### 🔄 Confusion Matrix
-![image](https://github.com/user-attachments/assets/e3b82bae-f6b2-4e44-96e6-1c7f8d3f5fb1)
+![Confusion Matrix](https://github.com/user-attachments/assets/e3b82bae-f6b2-4e44-96e6-1c7f8d3f5fb1)
 
-`🔲 Visualization of confusion matrix - heatmap `
+*Model performance across different Prakriti types*
 
 ---
 
-## 🙏 Acknowledgement
+## 🌐 Web Application
 
-Built using inspiration from **Ayurveda Prakriti** concept – integrating technology and tradition for personalized well-being.
+The system includes a user-friendly web interface with:
+- **Interactive form** for trait input
+- **Visual results dashboard** showing dosha distribution
+- **Gemini AI integration** for personalized recommendations
+- **Responsive design** accessible on all devices
+
+---
+
+## 🚀 Applications & Future Scope
+
+### Current Applications:
+- **Clinical Use**: Ayurvedic practitioners can use for preliminary analysis
+- **Personal Wellness**: Individuals can understand their constitution
+- **Integrated Therapy**: Basis for personalized aromatherapy recommendations
+
+### Future Enhancements:
+1. **Hardware Integration**: Already implemented prototype of Ayur Aroma Diffuser
+2. **Multimodal Recommendations**:
+   - Custom aromas based on Prakriti
+   - Visual therapy suggestions
+   - Raga (musical) therapy prescriptions
+3. **Health Monitoring**: Longitudinal tracking of dosha balance
+4. **Mental Health**: Prakriti-based stress and anxiety management
+
+---
+
+## 🙏 Acknowledgements
+
+Developed under the guidance of **Dr. Krantee Jamdaade** at KJSIM Data Science Department. Special thanks to our research team for bridging Ayurvedic wisdom with machine learning technology.
+
+```
+"Where ancient wisdom meets modern science for holistic well-being"
+```
