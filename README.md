@@ -24,11 +24,11 @@ Prakriti Nishchikaran is an innovative machine learning system that analyzes 40+
 
 ---
 ##  👨‍🏫 Team Members
-| Name                     | Role                           | Username                       |
-| ------------------------ | ------------------------------ | ------------------------------ |
-| **Dr. Krantee Jamdaade** | Mentor, Dataset Contributor    | Nil                            |
-| **Benjamin Sebastian**   | Full Stack Developer, ML Model | @SebastianBenjamin             |
-| **Arunima Pandey**       | Research & Frontend Developer  | @Arunima04                     |
+| Name                     | Role                           | GitHub Username                |
+|--------------------------|--------------------------------|-------------------------------|
+| **Dr. Krantee Jamdaade** | Mentor, Dataset Contributor    | *Not on GitHub*               |
+| **Benjamin Sebastian**   | Full Stack Developer, ML Model | [@SebastianBenjamin](https://github.com/SebastianBenjamin) |
+| **Arunima Pandey**       | Research & Frontend Developer  | [@Arunima04](https://github.com/Arunima04) |
 
 ---
 
