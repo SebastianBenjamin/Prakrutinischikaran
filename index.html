@@ -1053,6 +1053,16 @@
         localStorage.removeItem('userAge');
         resetForm();
     });
+     document.addEventListener('contextmenu',function(e){
+            alert("This action is disabled.");
+            e.preventDefault(  );});
+
+        document.addEventListener("keydown", function(event) {
+    if (event.keyCode == 123) { // F12 key
+        alert("This action is disabled.");
+        event.preventDefault();
+    }
+});
     </script>
 </body>
 </html>
